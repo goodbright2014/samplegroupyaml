@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: zipkin
+  namespace: dhcpd01-kimsg
+  labels:
+    svcname: zipkin
+spec:
+  ports:
+  - name: zipkin
+    port: 9411
+  type: NodePort
+  selector:
+    svcname: zipkin
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zipkin
+  namespace: dhcpd01-kimsg
+spec:
+
+  replicas: 1
+  selector:
+    matchLabels:
+      svcname: zipkin
+  template:
+    metadata:
+      labels:
+        svcname: zipkin
+    spec:
+      containers:
+      - name: zipkin
+        image: hcpcc01.skhynix.com:8500/cloud-private/openzipkin/zipkin:2.19.3
+        ports:
+        - containerPort: 9411
+        resources:
+          limits:
+            cpu: "500m"
+            memory: 1024Mi
+          requests:
+            cpu: "250m"
+            memory: 512Mi
+
